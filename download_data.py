@@ -19,6 +19,7 @@ def get_file(fname, origin, untar=False, cache_dir='data'):
             if os.path.exists(fpath):
                 os.remove(fpath)
             print("Download Aborted!")
+            print(Exception)
     return fpath
 
 
