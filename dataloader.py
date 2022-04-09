@@ -1,14 +1,23 @@
+import string
+import os
+import pickle
+import lmdb
+import io
+from PIL import Image
+
+from torch.utils.data import DataLoader
+import torch
 from torchvision.datasets.utils import verify_str_arg, iterable_to_str
 from torchvision.datasets.vision import VisionDataset
+from torchvision import transforms
 from typing import Union, Optional, Callable, List, cast, Any, Tuple
+from collections.abc import Iterable
 
 
 class LSUNClass(VisionDataset):
     def __init__(
         self, root: str, transform: Optional[Callable] = None, target_transform: Optional[Callable] = None
     ) -> None:
-        import lmdb
-
         super().__init__(root, transform=transform, target_transform=target_transform)
 
         self.env = lmdb.open(root, max_readers=1, readonly=True, lock=False, readahead=False, meminit=False)
@@ -158,3 +167,27 @@ class LSUNCustomDataLoader(VisionDataset):
 
     def extra_repr(self) -> str:
         return "Classes: {classes}".format(**self.__dict__)
+
+
+def get_lsun_dataloader(path_to_data='./data', dataset="sheep_train",
+                        batch_size=64):
+    """LSUN dataloader with (128, 128) sized images.
+    path_to_data : str
+        One of 'bedroom_val' or 'bedroom_train'
+    """
+    # Compose transforms
+    transform = transforms.Compose([
+        transforms.Resize(128),
+        transforms.CenterCrop(128),
+        transforms.ToTensor()
+    ])
+
+    # Get dataset
+    lsun_dset = LSUNCustomDataLoader(root=path_to_data, classes=[dataset], transform=transform)
+    print(len(lsun_dset))
+    sub_lsun_dset = torch.utils.data.Subset(lsun_dset, [i for i in range(6400)])
+    print(len(sub_lsun_dset))
+    # subset for test
+    sub_lsun_test = torch.utils.data.Subset(lsun_dset, [i for i in range(128)])
+    # Create dataloader
+    return DataLoader(sub_lsun_dset, batch_size=batch_size, shuffle=True), DataLoader(sub_lsun_test, batch_size=batch_size, shuffle=True)
