@@ -1,4 +1,4 @@
-import wget
+from urllib.request import urlretrieve
 import os.path
 import zipfile
 
@@ -14,12 +14,11 @@ def get_file(fname, origin, untar=False, cache_dir='data'):
         print('Downloading data from', origin)
 
         try:
-            wget.download(fpath, origin)
+            urlretrieve(origin, fpath)
         except (Exception, KeyboardInterrupt) as e:
             if os.path.exists(fpath):
                 os.remove(fpath)
             print("Download Aborted!")
-            print(Exception)
     return fpath
 
 
