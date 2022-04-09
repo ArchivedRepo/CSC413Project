@@ -25,3 +25,6 @@ def get_file(fname, origin, untar=False, cache_dir='data'):
 def unzip_dataset(fpath, target_path):
     with zipfile.ZipFile(fpath) as myzip:
         myzip.extractall(target_path)
+
+if __name__ == "__main__":
+    path = get_file("sheep", 'http://dl.yf.io/lsun/objects/sheep.zip')
