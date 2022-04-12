@@ -26,6 +26,7 @@ class Decoder(nn.Module):
     def __init__(self, capacity, latent_dims):
         super(Decoder, self).__init__()
         c = capacity
+        self.capacity = c
         self.fc = nn.Linear(in_features=latent_dims, out_features=c * 2 * 32 * 32)
         self.conv2 = nn.ConvTranspose2d(in_channels=c * 2, out_channels=c, kernel_size=4, stride=2, padding=1)
         self.conv1 = nn.ConvTranspose2d(in_channels=c, out_channels=3, kernel_size=4, stride=2, padding=1)
