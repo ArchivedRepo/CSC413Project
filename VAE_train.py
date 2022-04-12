@@ -33,7 +33,7 @@ for epoch in range(num_epochs):
     train_loss_avg.append(0)
     num_batches = 0
 
-    for image_batch, _ in train_dataloader:
+    for image_batch, _ in train_loader:
 
         image_batch = image_batch.to(device)
 
