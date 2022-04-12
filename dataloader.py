@@ -83,7 +83,7 @@ class LSUNCustomDataLoader(VisionDataset):
         # for each class, create an LSUNClassDataset
         self.dbs = []
         for c in self.classes:
-            self.dbs.append(LSUNClass(root='./data/sheep', transform=transform))
+            self.dbs.append(LSUNClass(root=root, transform=transform))
 
         self.indices = []
         count = 0
