@@ -35,9 +35,9 @@ images, labels = iter(test_loader).next()
 
 # First visualise the original images
 print('Original images')
-show_image('original-images', torchvision.utils.make_grid(images[1:50], 10, 5))
+show_image('original-images.png', torchvision.utils.make_grid(images[1:50], 10, 5))
 plt.show()
 
 # Reconstruct and visualise the images using the vae
 print('VAE reconstruction:')
-visualise_output("vae-recons", images, vae)
+visualise_output("vae-recons.png", images, vae)
