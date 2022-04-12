@@ -40,4 +40,5 @@ plt.show()
 
 # Reconstruct and visualise the images using the vae
 print('VAE reconstruction:')
+vae = torch.load('vae_80.pt')
 visualise_output("vae-recons.png", images, vae)
