@@ -1,6 +1,7 @@
 import torch
 from VAE import VariationalAutoencoder, vae_loss
 from dataloader import get_lsun_dataloader
+import json
 
 latent_dims = 20
 num_epochs = 1
@@ -66,4 +67,4 @@ for epoch in range(num_epochs):
         torch.save(vae, f"vae_{epoch}.pt")
 
 with open('losses.log', 'w') as ptr:
-    ptr.write(losses)
+    json.dump(losses.__dict__, ptr)
