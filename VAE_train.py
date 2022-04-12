@@ -11,6 +11,7 @@ learning_rate = 1e-3
 use_gpu = True
 log_step = 10
 losses = {"iteration": [], "loss": []}
+model_save_step = 1
 
 vae = VariationalAutoencoder(capacity, latent_dims)
 
@@ -61,3 +62,6 @@ for epoch in range(num_epochs):
 
     train_loss_avg[-1] /= num_batches
     print('Epoch [%d / %d] average reconstruction error: %f' % (epoch + 1, num_epochs, train_loss_avg[-1]))
+    if epoch % model_save_step == 0 and epoch != 0:
+        print(f"Saving model at step {epoch}")
+        torch.save(vae, f"vae_{epoch}.pt")
