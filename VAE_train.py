@@ -67,4 +67,4 @@ for epoch in range(num_epochs):
         torch.save(vae, f"vae_{epoch}.pt")
 
 with open('losses.log', 'w') as ptr:
-    json.dump(losses.__dict__, ptr)
+    json.dump(losses, ptr)
