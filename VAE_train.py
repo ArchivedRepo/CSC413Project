@@ -1,5 +1,6 @@
 import torch
 from VAE import VariationalAutoencoder, vae_loss
+from dataloader import get_lsun_dataloader
 
 
 latent_dims = 20
@@ -25,6 +26,7 @@ optimizer = torch.optim.Adam(params=vae.parameters(), lr=learning_rate, weight_d
 vae.train()
 
 train_loss_avg = []
+train_loader, test_loader = get_lsun_dataloader('/root/data')
 
 print('Training ...')
 for epoch in range(num_epochs):
