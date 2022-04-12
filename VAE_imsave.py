@@ -39,6 +39,6 @@ show_image('original-images.png', torchvision.utils.make_grid(images[1:50], 10, 
 plt.show()
 
 # Reconstruct and visualise the images using the vae
-print('VAE reconstruction:')
-vae = torch.load('vae_80.pt')
-visualise_output("vae-recons.png", images, vae)
+# print('VAE reconstruction:')
+# vae = torch.load('vae_80.pt')
+# visualise_output("vae-recons.png", images, vae)
