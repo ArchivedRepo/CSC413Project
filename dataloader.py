@@ -177,8 +177,8 @@ def get_lsun_dataloader(path_to_data='./data', dataset="sheep_train",
     """
     # Compose transforms
     transform = transforms.Compose([
-        transforms.Resize(32),
-        transforms.CenterCrop(32),
+        transforms.Resize(64),
+        transforms.CenterCrop(64),
         transforms.ToTensor()
     ])
 
@@ -194,4 +194,5 @@ def get_lsun_dataloader(path_to_data='./data', dataset="sheep_train",
 
 
 if __name__ == "__main__":
-    train_loader, test_loader = get_lsun_dataloader('/root/data')
+    # Todo: change path to local path to .mdb file
+    train_loader, test_loader = get_lsun_dataloader('/media/anna/54F8F2E0F8F2BF74/CSC413Project/data/sheep')
