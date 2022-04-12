@@ -4,14 +4,14 @@ import torch.nn.functional as F
 
 
 class Encoder(nn.Module):
-    def __init__(self, capacity, latent_dims):
+    def __init__(self, capacity, latent_dims, input_dim):
         super(Encoder, self).__init__()
         c = capacity
-        self.conv1 = nn.Conv2d(in_channels=3, out_channels=c, kernel_size=4, stride=2, padding=1)  # out: c x 64 x 64
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=c, kernel_size=4, stride=2, padding=1)  # out: c x 32 x 32
         self.conv2 = nn.Conv2d(in_channels=c, out_channels=c * 2, kernel_size=4, stride=2,
-                               padding=1)  # out: c x 32 x 32
-        self.fc_mu = nn.Linear(in_features=c * 2 * 32 * 32, out_features=latent_dims)
-        self.fc_logvar = nn.Linear(in_features=c * 2 * 32 * 32, out_features=latent_dims)
+                               padding=1)  # out: c x 16 x 16
+        self.fc_mu = nn.Linear(in_features=c * 2 * input_dim//4 * input_dim//4, out_features=latent_dims)
+        self.fc_logvar = nn.Linear(in_features=c * 2 * input_dim//4 * input_dim//4, out_features=latent_dims)
 
     def forward(self, x):
         x = F.relu(self.conv1(x))
@@ -23,18 +23,19 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module):
-    def __init__(self, capacity, latent_dims):
+    def __init__(self, capacity, latent_dims, input_dim):
         super(Decoder, self).__init__()
         c = capacity
         self.capacity = c
-        self.fc = nn.Linear(in_features=latent_dims, out_features=c * 2 * 32 * 32)
+        self.input_dim = input_dim
+        self.fc = nn.Linear(in_features=latent_dims, out_features=c * 2 * input_dim//4 * input_dim//4)
         self.conv2 = nn.ConvTranspose2d(in_channels=c * 2, out_channels=c, kernel_size=4, stride=2, padding=1)
         self.conv1 = nn.ConvTranspose2d(in_channels=c, out_channels=3, kernel_size=4, stride=2, padding=1)
 
     def forward(self, x):
         x = self.fc(x)
-        x = x.view(x.size(0), self.capacity * 2, 32,
-                   32)  # unflatten batch of feature vectors to a batch of multi-channel feature maps
+        x = x.view(x.size(0), self.capacity * 2, self.input_dim//4,
+                   self.input_dim//4)  # unflatten batch of feature vectors to a batch of multi-channel feature maps
         x = F.relu(self.conv2(x))
         x = torch.sigmoid(
             self.conv1(x))  # last layer before output is sigmoid, since we are using BCE as reconstruction loss
@@ -42,10 +43,10 @@ class Decoder(nn.Module):
 
 
 class VariationalAutoencoder(nn.Module):
-    def __init__(self, capacity, latent_dim):
+    def __init__(self, capacity, latent_dim, input_dim):
         super(VariationalAutoencoder, self).__init__()
-        self.encoder = Encoder(capacity, latent_dim)
-        self.decoder = Decoder(capacity, latent_dim)
+        self.encoder = Encoder(capacity, latent_dim, input_dim)
+        self.decoder = Decoder(capacity, latent_dim, input_dim)
 
     def forward(self, x):
         latent_mu, latent_logvar = self.encoder(x)
@@ -71,7 +72,7 @@ def vae_loss(recon_x, x, mu, logvar):
     # we need to pick for the other loss term by several orders of magnitude.
     # Not averaging is the direct implementation of the negative log likelihood,
     # but averaging makes the weight of the other loss term independent of the image resolution.
-    recon_loss = F.binary_cross_entropy(recon_x.view(-1, 16384), x.view(-1, 16384), reduction='sum')
+    recon_loss = F.binary_cross_entropy(recon_x.view(-1, 4096), x.view(-1, 4096), reduction='sum')
 
     # KL-divergence between the prior distribution over latent vectors
     # (the one we are going to sample from when generating new images)

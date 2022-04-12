@@ -1,70 +1,102 @@
+import numpy as np
 import torch
 from VAE import VariationalAutoencoder, vae_loss
 from dataloader import get_lsun_dataloader
 import json
+import matplotlib.pyplot as plt
 
 latent_dims = 20
 num_epochs = 100
 batch_size = 64
 capacity = 64
+input_dim = 64
 learning_rate = 1e-3
 use_gpu = True
 log_step = 10
 losses = {"iteration": [], "loss": []}
 model_save_step = 10
+max_epochs_stop = 5
 
-vae = VariationalAutoencoder(capacity, latent_dims)
 
-device = torch.device("cuda:0" if use_gpu and torch.cuda.is_available() else "cpu")
-vae = vae.to(device)
+def train(datapath, num_epochs=num_epochs):
 
-num_params = sum(p.numel() for p in vae.parameters() if p.requires_grad)
-print('Number of parameters: %d' % num_params)
+    vae = VariationalAutoencoder(capacity, latent_dims, input_dim)
 
-optimizer = torch.optim.Adam(params=vae.parameters(), lr=learning_rate, weight_decay=1e-5)
+    device = torch.device("cuda:0" if use_gpu and torch.cuda.is_available() else "cpu")
+    vae = vae.to(device)
 
-# set to training mode
-vae.train()
+    num_params = sum(p.numel() for p in vae.parameters() if p.requires_grad)
+    print('Number of parameters: %d' % num_params)
 
-train_loss_avg = []
-train_loader, test_loader = get_lsun_dataloader('/root/data', batch_size=128)
+    optimizer = torch.optim.Adam(params=vae.parameters(), lr=learning_rate, weight_decay=1e-5)
 
-print('Training ...')
-for epoch in range(num_epochs):
-    train_loss_avg.append(0)
-    num_batches = 0
+    # set to training mode
+    vae.train()
 
-    for image_batch, _ in train_loader:
+    train_loss_avg = []
+    # Todo: change path to local path to .mdb file
+    train_loader, test_loader = get_lsun_dataloader(datapath, batch_size=128)
 
-        image_batch = image_batch.to(device)
+    ### early stopping
+    count_stop = 0
+    min_loss_each = np.inf
 
-        # vae reconstruction
-        image_batch_recon, latent_mu, latent_logvar = vae(image_batch)
+    print('Training ...')
+    for epoch in range(num_epochs):
+        train_loss_avg.append(0)
+        num_batches = 0
 
-        # reconstruction error
-        loss = vae_loss(image_batch_recon, image_batch, latent_mu, latent_logvar)
+        for image_batch, _ in train_loader:
 
-        # backpropagation
-        optimizer.zero_grad()
-        loss.backward()
+            image_batch = image_batch.to(device)
 
-        # one step of the optmizer (using the gradients from backpropagation)
-        optimizer.step()
+            # vae reconstruction
+            image_batch_recon, latent_mu, latent_logvar = vae(image_batch)
 
-        train_loss_avg[-1] += loss.item()
+            # reconstruction error
+            loss = vae_loss(image_batch_recon, image_batch, latent_mu, latent_logvar)
 
-        if num_batches % log_step == 0:
-            losses['iteration'].append(num_batches)
-            losses['loss'].append(loss.item())
-            print('Iteration [{:4d}/{:4d}] | train_loss: {:6.4f}'.format(
-                num_batches, 100, loss.item()))
-        num_batches += 1
+            # backpropagation
+            optimizer.zero_grad()
+            loss.backward()
 
-    train_loss_avg[-1] /= num_batches
-    print('Epoch [%d / %d] average reconstruction error: %f' % (epoch + 1, num_epochs, train_loss_avg[-1]))
-    if epoch % model_save_step == 0 and epoch != 0:
-        print(f"Saving model at step {epoch}")
-        torch.save(vae, f"vae_{epoch}.pt")
+            # one step of the optmizer (using the gradients from backpropagation)
+            optimizer.step()
 
-with open('losses.log', 'w') as ptr:
-    json.dump(losses, ptr)
+            train_loss_avg[-1] += loss.item()
+
+            if num_batches % log_step == 0:
+                losses['iteration'].append(num_batches)
+                losses['loss'].append(loss.item())
+                print('Iteration [{:4d}/{:4d}] | train_loss: {:6.4f}'.format(
+                    num_batches, 100, loss.item()))
+            num_batches += 1
+
+        train_loss_avg[-1] /= num_batches
+
+        print('Epoch [%d / %d] average reconstruction error: %f' % (epoch + 1, num_epochs, train_loss_avg[-1]))
+        if epoch % model_save_step == 0 and epoch != 0:
+            print(f"Saving model at step {epoch}")
+            torch.save(vae, f"vae_{epoch}.pt")
+
+        if min_loss_each > train_loss_avg[-1]:
+            min_loss_each = train_loss_avg[-1]
+            count_stop = 0
+        else:
+            count_stop += 1
+            print("count stop " + str(count_stop))
+            if count_stop >= max_epochs_stop:
+                print(f'\n Early Stopping !')
+                break
+
+
+    fig = plt.figure()
+    plt.plot(train_loss_avg)
+    plt.title("VAE Training Curve")
+    plt.xlabel('Epochs')
+    plt.ylabel('Training Loss')
+    plt.show()
+    plt.savefig('vae_loss_curve.png')
+
+    with open('losses.log', 'w') as ptr:
+        json.dump(losses, ptr)

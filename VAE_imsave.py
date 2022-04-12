@@ -19,7 +19,7 @@ def show_image(fname, img):
     plt.imsave(fname, np.transpose(npimg, (1, 2, 0)))
 
 
-def visualise_output(fname, images, model):
+def visualise_output(fname, images, model, device):
     with torch.no_grad():
         images = images.to(device)
         images, _, _ = model(images)
@@ -29,16 +29,23 @@ def visualise_output(fname, images, model):
         plt.imsave(fname, np.transpose(np_imagegrid, (1, 2, 0)))
 
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-_, test_loader = get_lsun_dataloader('/root/data', batch_size=64)
-images, labels = iter(test_loader).next()
+def img_main(data_path, niter):
 
-# First visualise the original images
-print('Original images')
-show_image('original-images.png', torchvision.utils.make_grid(images[1:50], 10, 5))
-plt.show()
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # Todo: change path to local path to .mdb file
+    _, test_loader = get_lsun_dataloader(data_path, batch_size=64)
+    images, labels = iter(test_loader).next()
 
-# Reconstruct and visualise the images using the vae
-# print('VAE reconstruction:')
-# vae = torch.load('vae_80.pt')
-# visualise_output("vae-recons.png", images, vae)
+    # First visualise the original images
+    # print('Original images')
+    # show_image('original-images.png', torchvision.utils.make_grid(images[1:50], 10, 5))
+    # plt.show()
+
+    # Reconstruct and visualise the images using the vae
+    print('VAE reconstruction:')
+
+
+    model_num = ((int(niter)-1) // 10) * 10
+
+    vae = torch.load( f"vae_{model_num}.pt")
+    visualise_output(f"vae_recons_{model_num}.png", images, vae, device)
