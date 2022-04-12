@@ -177,8 +177,8 @@ def get_lsun_dataloader(path_to_data='./data', dataset="sheep_train",
     """
     # Compose transforms
     transform = transforms.Compose([
-        transforms.Resize(64),
-        transforms.CenterCrop(64),
+        transforms.Resize(32),
+        transforms.CenterCrop(32),
         transforms.ToTensor()
     ])
 
