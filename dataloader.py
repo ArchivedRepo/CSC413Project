@@ -191,3 +191,7 @@ def get_lsun_dataloader(path_to_data='./data', dataset="sheep_train",
     sub_lsun_test = torch.utils.data.Subset(lsun_dset, [i for i in range(128)])
     # Create dataloader
     return DataLoader(sub_lsun_dset, batch_size=batch_size, shuffle=True), DataLoader(sub_lsun_test, batch_size=batch_size, shuffle=True)
+
+
+if __name__ == "__main__":
+    train_loader, test_loader = get_lsun_dataloader('/root/data')
