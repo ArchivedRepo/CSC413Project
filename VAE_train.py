@@ -4,7 +4,7 @@ from dataloader import get_lsun_dataloader
 import json
 
 latent_dims = 20
-num_epochs = 1
+num_epochs = 100
 batch_size = 64
 capacity = 64
 learning_rate = 1e-3
