@@ -26,7 +26,7 @@ optimizer = torch.optim.Adam(params=vae.parameters(), lr=learning_rate, weight_d
 vae.train()
 
 train_loss_avg = []
-train_loader, test_loader = get_lsun_dataloader('/root/data')
+train_loader, test_loader = get_lsun_dataloader('/root/data', batch_size=128)
 
 print('Training ...')
 for epoch in range(num_epochs):
