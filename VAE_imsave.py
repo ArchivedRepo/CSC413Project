@@ -26,7 +26,7 @@ def visualise_output(fname, images, model):
         images = images.cpu()
         images = to_img(images)
         np_imagegrid = torchvision.utils.make_grid(images[1:50], 10, 5).numpy()
-        plt.imshow(fname, np.transpose(np_imagegrid, (1, 2, 0)))
+        plt.imsave(fname, np.transpose(np_imagegrid, (1, 2, 0)))
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
