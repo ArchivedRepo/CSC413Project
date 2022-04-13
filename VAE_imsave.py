@@ -27,7 +27,7 @@ def visualise_output(fname, images, model, device):
         print(images.shape)
         images = images.cpu()
         images = to_img(images)
-        np_imagegrid = torchvision.utils.make_grid(images[1:50], 10, 5).numpy()
+        np_imagegrid = torchvision.utils.make_grid(images[0:64], 8, 8).numpy()
         plt.imsave(fname, np.transpose(np_imagegrid, (1, 2, 0)))
 
 
