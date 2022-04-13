@@ -119,6 +119,9 @@ def train_dcgan(dataloader, test_dataloader):
     g_optimizer = torch.optim.Adam(G.parameters(), learning_rate, [beta1, beta2])
     d_optimizer = torch.optim.Adam(D.parameters(), learning_rate * 2., [beta1, beta2])
 
+    num_params = sum(p.numel() for p in G.parameters() if p.requires_grad)
+    print('Number of parameters: %d' % num_params)
+
     train_iter = iter(dataloader)
 
     iter_per_epoch = len(train_iter)
@@ -210,5 +213,5 @@ def train_dcgan(dataloader, test_dataloader):
 
 if __name__ == "__main__":
     #todo:
-    train_loader, test_loader = get_lsun_dataloader('./data', batch_size=128)
+    train_loader, test_loader = get_lsun_dataloader('/media/anna/54F8F2E0F8F2BF74/CSC413Project/data/sheep', batch_size=batch_size)
     G, D = train_dcgan(train_loader, test_loader)
