@@ -9,7 +9,7 @@ import os
 from subprocess import call
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataroot', default='./data', help='path to dataset')
+parser.add_argument('--dataroot', default='/root/data', help='path to dataset')
 parser.add_argument('--niter', type=int, default=100, help='number of epochs to train for')
 parser.add_argument('--download_data', action='store_true', help='download data from scratch')
 opt = parser.parse_args()
@@ -31,8 +31,8 @@ if opt.download_data:
     img_main(opt.dataroot + '/sheep', opt.niter)
 
 else:
-    train_loader, test_loader = get_lsun_dataloader(opt.dataroot + '/sheep')
+    train_loader, test_loader = get_lsun_dataloader(opt.dataroot + '/')
 
-    train(opt.dataroot+'/sheep',opt.niter)
-    img_main(opt.dataroot + '/sheep', opt.niter)
+    train(opt.dataroot+'/', opt.niter)
+    img_main(opt.dataroot + '/', opt.niter)
 

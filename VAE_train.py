@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 latent_dims = 20
 num_epochs = 100
-batch_size = 64
+batch_size = 256
 capacity = 64
 input_dim = 64
 learning_rate = 1e-3
@@ -36,9 +36,9 @@ def train(datapath, num_epochs=num_epochs):
 
     train_loss_avg = []
     # Todo: change path to local path to .mdb file
-    train_loader, test_loader = get_lsun_dataloader(datapath, batch_size=128)
+    train_loader, test_loader = get_lsun_dataloader(datapath, batch_size=batch_size)
 
-    ### early stopping
+    # early stopping
     count_stop = 0
     min_loss_each = np.inf
 
@@ -61,7 +61,7 @@ def train(datapath, num_epochs=num_epochs):
             optimizer.zero_grad()
             loss.backward()
 
-            # one step of the optmizer (using the gradients from backpropagation)
+            # one step of the optimizer (using the gradients from backpropagation)
             optimizer.step()
 
             train_loss_avg[-1] += loss.item()
@@ -89,7 +89,6 @@ def train(datapath, num_epochs=num_epochs):
             fig, ax = plt.subplots(figsize=(5, 5))
             show_image(f"vae_sample_{epoch}.png",torchvision.utils.make_grid(img_recon.data[:100], 10, 5))
 
-
         print('Epoch [%d / %d] average reconstruction error: %f' % (epoch + 1, num_epochs, train_loss_avg[-1]))
         if epoch % model_save_step == 0 and epoch != 0:
             print(f"Saving model at step {epoch}")
@@ -105,14 +104,10 @@ def train(datapath, num_epochs=num_epochs):
                 print(f'\n Early Stopping !')
                 break
 
-
-
-    fig = plt.figure()
     plt.plot(train_loss_avg)
     plt.title("VAE Training Curve")
     plt.xlabel('Epochs')
     plt.ylabel('Training Loss')
-    plt.show()
     plt.savefig('vae_loss_curve.png')
 
     with open('losses.log', 'w') as ptr:
