@@ -74,11 +74,13 @@ def create_image_grid(array, ncols=None):
         result = result.squeeze()
     return result
 
+
 def to_data(x):
     """Converts variable to numpy."""
     if torch.cuda.is_available():
         x = x.cpu()
     return x.data.numpy()
+
 
 def gan_save_samples(G, fixed_noise, iteration):
     generated_images = G(fixed_noise)
@@ -89,8 +91,11 @@ def gan_save_samples(G, fixed_noise, iteration):
     path = os.path.join(output_dir, 'sample-{:06d}.png'.format(iteration))
     imageio.imwrite(path, grid)
     print('Saved {}'.format(path))
-G = torch.load( f"G_100.pt")
 
-fixed_noise = sample_noise(batch_size, latent_dim)
-print(fixed_noise.shape)
-gan_save_samples(G, fixed_noise, train_iters)
+
+if __name__ == "__main__":
+    G = torch.load( f"G_100.pt")
+
+    fixed_noise = sample_noise(batch_size, latent_dim)
+    print(fixed_noise.shape)
+    gan_save_samples(G, fixed_noise, train_iters)

@@ -18,15 +18,16 @@ learning_rate = 1e-3
 weight_decay=1e-5
 losses = {"iteration": [], "loss": []}
 model_save_step = 10
-batch_size = 64
+batch_size = 512
 d_train_iters = 1
-train_iters = 1000
+train_iters = 6000
 use_gpu = True
 model_save_step = 100
 log_step = 10
 output_dir = "."
 beta1 = 0.5
 beta2 = 0.999
+
 
 def create_model():
     """Builds the generators and discriminators.
@@ -40,6 +41,7 @@ def create_model():
     D = D.to(device)
 
     return G, D
+
 
 def to_var(tensor, cuda=True):
     """Wraps a Tensor in a Variable, optionally placing it on the GPU.
@@ -58,8 +60,6 @@ def to_var(tensor, cuda=True):
 
 
 def create_image_grid(array, ncols=None):
-    """
-    """
     num_images, channels, cell_h, cell_w = array.shape
     if not ncols:
         ncols = int(np.sqrt(num_images))
@@ -208,10 +208,11 @@ def train_dcgan(dataloader, test_dataloader):
     plt.legend()
     plt.savefig(os.path.join(output_dir, 'losses.png'))
     plt.close()
+    with open('losses-dcgan.log', 'w') as ptr:
+        json.dump(losses, ptr)
     return G, D
 
 
 if __name__ == "__main__":
-    #todo:
-    train_loader, test_loader = get_lsun_dataloader('/media/anna/54F8F2E0F8F2BF74/CSC413Project/data/sheep', batch_size=batch_size)
+    train_loader, test_loader = get_lsun_dataloader('/root/data/', batch_size=batch_size)
     G, D = train_dcgan(train_loader, test_loader)
