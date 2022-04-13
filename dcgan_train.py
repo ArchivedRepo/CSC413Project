@@ -8,6 +8,8 @@ from dcgan import Generator, Discriminator
 from dataloader import get_lsun_dataloader
 import json
 import matplotlib.pyplot as plt
+import numpy as np
+import imageio
 
 generator_dim = 32
 discriminator_dim = 64
@@ -18,9 +20,9 @@ losses = {"iteration": [], "loss": []}
 model_save_step = 10
 batch_size = 64
 d_train_iters = 1
-train_iters = 100
+train_iters = 1000
 use_gpu = True
-model_save_step = 10
+model_save_step = 100
 log_step = 10
 output_dir = "."
 beta1 = 0.5
@@ -54,6 +56,43 @@ def to_var(tensor, cuda=True):
     else:
         return Variable(tensor)
 
+
+def create_image_grid(array, ncols=None):
+    """
+    """
+    num_images, channels, cell_h, cell_w = array.shape
+    if not ncols:
+        ncols = int(np.sqrt(num_images))
+    nrows = int(np.math.floor(num_images / float(ncols)))
+    result = np.zeros((cell_h * nrows, cell_w * ncols, channels), dtype=array.dtype)
+    for i in range(0, nrows):
+        for j in range(0, ncols):
+            result[i * cell_h:(i + 1) * cell_h, j * cell_w:(j + 1) * cell_w, :] = array[i * ncols + j].transpose(1, 2,
+                                                                                                                 0)
+
+    if channels == 1:
+        result = result.squeeze()
+    return result
+
+
+def to_data(x):
+    """Converts variable to numpy."""
+    if torch.cuda.is_available():
+        x = x.cpu()
+    return x.data.numpy()
+
+
+def gan_save_samples(G, fixed_noise, iteration):
+    generated_images = G(fixed_noise)
+    generated_images = to_data(generated_images)
+
+    grid = create_image_grid(generated_images)
+
+    path = os.path.join(output_dir, 'dcgan-{:06d}.png'.format(iteration))
+    imageio.imwrite(path, grid)
+    print('Saved {}'.format(path))
+
+
 def sample_noise(batch_size, dim):
     """
     Generate a PyTorch Tensor of uniform random noise.
@@ -86,6 +125,8 @@ def train_dcgan(dataloader, test_dataloader):
     total_train_iters = train_iters
 
     losses = {"iteration": [], "D_fake_loss": [], "D_real_loss": [], "G_loss": []}
+    # Sample a fixed noise
+    fixed_noise = sample_noise(batch_size, latent_dim)
 
     try:
         for iteration in range(1, train_iters + 1):
@@ -150,7 +191,8 @@ def train_dcgan(dataloader, test_dataloader):
             if iteration % model_save_step == 0 and iteration != 0:
                 print(f"Saving model at step {iteration}")
                 torch.save(G, f"G_{iteration}.pt")
-                torch.save(D, f"G_{iteration}.pt")
+                torch.save(D, f"D_{iteration}.pt")
+                gan_save_samples(G, fixed_noise, iteration)
 
     except KeyboardInterrupt:
         print('Exiting early from training.')
