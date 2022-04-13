@@ -52,4 +52,4 @@ def img_main(data_path, niter):
 
 
 if __name__ == "__main__":
-    img_main('/media/anna/54F8F2E0F8F2BF74/CSC413Project/data'+ '/sheep', 11)
+    img_main('/root/data', 11)
