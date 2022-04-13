@@ -209,5 +209,6 @@ def train_dcgan(dataloader, test_dataloader):
 
 
 if __name__ == "__main__":
-    train_loader, test_loader = get_lsun_dataloader('/root/data', batch_size=128)
+    #todo:
+    train_loader, test_loader = get_lsun_dataloader('./data', batch_size=128)
     G, D = train_dcgan(train_loader, test_loader)

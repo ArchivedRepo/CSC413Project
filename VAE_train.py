@@ -3,6 +3,7 @@ import torch
 from VAE import VariationalAutoencoder, vae_loss
 from dataloader import get_lsun_dataloader
 import json
+from VAE_imsave import *
 import matplotlib.pyplot as plt
 
 latent_dims = 20
@@ -74,6 +75,21 @@ def train(datapath, num_epochs=num_epochs):
 
         train_loss_avg[-1] /= num_batches
 
+        vae.eval()
+
+        with torch.no_grad():
+
+            # sample latent vectors from the normal distribution
+            latent = torch.randn(batch_size, latent_dims, device=device)
+
+            # reconstruct images from the latent vectors
+            img_recon = vae.decoder(latent)
+            img_recon = img_recon.cpu()
+
+            fig, ax = plt.subplots(figsize=(5, 5))
+            show_image(f"vae_sample_{epoch}.png",torchvision.utils.make_grid(img_recon.data[:100], 10, 5))
+
+
         print('Epoch [%d / %d] average reconstruction error: %f' % (epoch + 1, num_epochs, train_loss_avg[-1]))
         if epoch % model_save_step == 0 and epoch != 0:
             print(f"Saving model at step {epoch}")
@@ -88,6 +104,7 @@ def train(datapath, num_epochs=num_epochs):
             if count_stop >= max_epochs_stop:
                 print(f'\n Early Stopping !')
                 break
+
 
 
     fig = plt.figure()

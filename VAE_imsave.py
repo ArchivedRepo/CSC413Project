@@ -23,6 +23,8 @@ def visualise_output(fname, images, model, device):
     with torch.no_grad():
         images = images.to(device)
         images, _, _ = model(images)
+        print(images)
+        print(images.shape)
         images = images.cpu()
         images = to_img(images)
         np_imagegrid = torchvision.utils.make_grid(images[1:50], 10, 5).numpy()
@@ -49,3 +51,5 @@ def img_main(data_path, niter):
 
     vae = torch.load( f"vae_{model_num}.pt")
     visualise_output(f"vae_recons_{model_num}.png", images, vae, device)
+
+img_main('/media/anna/54F8F2E0F8F2BF74/CSC413Project/data'+ '/sheep', 11)
