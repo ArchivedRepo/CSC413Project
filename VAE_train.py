@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 latent_dims = 20
 num_epochs = 100
-batch_size = 256
+batch_size = 512
 capacity = 64
 input_dim = 64
 learning_rate = 1e-3
