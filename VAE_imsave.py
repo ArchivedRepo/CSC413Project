@@ -45,11 +45,11 @@ def img_main(data_path, niter):
 
     # Reconstruct and visualise the images using the vae
     print('VAE reconstruction:')
-
-
     model_num = ((int(niter)-1) // 10) * 10
 
     vae = torch.load( f"vae_{model_num}.pt")
     visualise_output(f"vae_recons_{model_num}.png", images, vae, device)
 
-img_main('/media/anna/54F8F2E0F8F2BF74/CSC413Project/data'+ '/sheep', 11)
+
+if __name__ == "__main__":
+    img_main('/media/anna/54F8F2E0F8F2BF74/CSC413Project/data'+ '/sheep', 11)
