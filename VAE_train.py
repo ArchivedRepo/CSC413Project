@@ -7,7 +7,7 @@ from VAE_imsave import *
 import matplotlib.pyplot as plt
 
 latent_dims = 20
-num_epochs = 100
+num_epochs = 50
 batch_size = 512
 capacity = 64
 input_dim = 64
