@@ -10,12 +10,15 @@ class Encoder(nn.Module):
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=c, kernel_size=4, stride=2, padding=1)  # out: c x 32 x 32
         self.conv2 = nn.Conv2d(in_channels=c, out_channels=c * 2, kernel_size=4, stride=2,
                                padding=1)  # out: c x 16 x 16
-        self.fc_mu = nn.Linear(in_features=c * 2 * input_dim//4 * input_dim//4, out_features=latent_dims)
-        self.fc_logvar = nn.Linear(in_features=c * 2 * input_dim//4 * input_dim//4, out_features=latent_dims)
+        self.conv3 = nn.Conv2d(in_channels=c * 2, out_channels=c * 4, kernel_size=4, stride=2,
+                               padding=1)  # out: c x 8 x 8
+        self.fc_mu = nn.Linear(in_features=c * 4 * input_dim//8 * input_dim//8, out_features=latent_dims)
+        self.fc_logvar = nn.Linear(in_features=c * 4 * input_dim//8 * input_dim//8, out_features=latent_dims)
 
     def forward(self, x):
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
+        x = F.relu(self.conv3(x))
         x = x.view(x.size(0), -1)  # flatten batch of multi-channel feature maps to a batch of feature vectors
         x_mu = self.fc_mu(x)
         x_logvar = self.fc_logvar(x)
@@ -28,7 +31,8 @@ class Decoder(nn.Module):
         c = capacity
         self.capacity = c
         self.input_dim = input_dim
-        self.fc = nn.Linear(in_features=latent_dims, out_features=c * 2 * input_dim//4 * input_dim//4)
+        self.fc = nn.Linear(in_features=latent_dims, out_features=c * 4 * input_dim//8 * input_dim//8)
+        self.conv3 = nn.ConvTranspose2d(in_channels=c * 4, out_channels=c * 2, kernel_size=4, stride=2, padding=1)
         self.conv2 = nn.ConvTranspose2d(in_channels=c * 2, out_channels=c, kernel_size=4, stride=2, padding=1)
         self.conv1 = nn.ConvTranspose2d(in_channels=c, out_channels=3, kernel_size=4, stride=2, padding=1)
 
@@ -36,6 +40,7 @@ class Decoder(nn.Module):
         x = self.fc(x)
         x = x.view(x.size(0), self.capacity * 2, self.input_dim//4,
                    self.input_dim//4)  # unflatten batch of feature vectors to a batch of multi-channel feature maps
+        x = F.relu(self.conv3(x))
         x = F.relu(self.conv2(x))
         x = torch.sigmoid(
             self.conv1(x))  # last layer before output is sigmoid, since we are using BCE as reconstruction loss
