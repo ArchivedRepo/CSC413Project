@@ -38,8 +38,8 @@ class Decoder(nn.Module):
 
     def forward(self, x):
         x = self.fc(x)
-        x = x.view(x.size(0), self.capacity * 2, self.input_dim//4,
-                   self.input_dim//4)  # unflatten batch of feature vectors to a batch of multi-channel feature maps
+        x = x.view(x.size(0), self.capacity * 4, self.input_dim//8,
+                   self.input_dim//8)  # unflatten batch of feature vectors to a batch of multi-channel feature maps
         x = F.relu(self.conv3(x))
         x = F.relu(self.conv2(x))
         x = torch.sigmoid(
