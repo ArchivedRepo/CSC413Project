@@ -6,7 +6,7 @@ import json
 from VAE_imsave import *
 import matplotlib.pyplot as plt
 
-latent_dims = 20
+latent_dims = 50
 num_epochs = 25
 batch_size = 512
 capacity = 64
