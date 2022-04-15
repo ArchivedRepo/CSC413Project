@@ -10,7 +10,7 @@ from subprocess import call
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataroot', default='/root/data', help='path to dataset')
-parser.add_argument('--niter', type=int, default=50, help='number of epochs to train for')
+parser.add_argument('--niter', type=int, default=25, help='number of epochs to train for')
 parser.add_argument('--download_data', action='store_true', help='download data from scratch')
 opt = parser.parse_args()
 print(opt)

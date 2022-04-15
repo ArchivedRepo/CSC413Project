@@ -7,7 +7,7 @@ from VAE_imsave import *
 import matplotlib.pyplot as plt
 
 latent_dims = 20
-num_epochs = 50
+num_epochs = 25
 batch_size = 512
 capacity = 64
 input_dim = 64
@@ -19,7 +19,7 @@ model_save_step = 10
 max_epochs_stop = 5
 
 
-def train(datapath, num_epochs=num_epochs):
+def train(datapath, num_epochs):
 
     vae = VariationalAutoencoder(capacity, latent_dims, input_dim)
 
