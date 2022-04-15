@@ -13,7 +13,7 @@ import imageio
 
 generator_dim = 32
 discriminator_dim = 64
-latent_dim = 21       # noise size
+latent_dim = 50      # noise size
 learning_rate = 1e-3
 weight_decay=1e-5
 losses = {"iteration": [], "loss": []}
