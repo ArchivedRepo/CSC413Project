@@ -185,7 +185,7 @@ def get_lsun_dataloader(path_to_data='./data', dataset="sheep_train",
     # Get dataset
     lsun_dset = LSUNCustomDataLoader(root=path_to_data, classes=[dataset], transform=transform)
     print(len(lsun_dset))
-    sub_lsun_dset = torch.utils.data.Subset(lsun_dset, [i for i in range(60000)])
+    sub_lsun_dset = torch.utils.data.Subset(lsun_dset, [i for i in range(200000)])
     print(len(sub_lsun_dset))
     # subset for test
     sub_lsun_test = torch.utils.data.Subset(lsun_dset, [i for i in range(128)])
