@@ -1,3 +1,7 @@
+"""
+Adapted from:
+http://pytorch.org/vision/main/_modules/torchvision/datasets/lsun.html#LSUN
+"""
 import string
 import os
 import pickle

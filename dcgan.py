@@ -1,5 +1,7 @@
 # *****************
 # Model for DCGAN
+# Adapted From:
+# https://github.com/pytorch/examples/tree/main/dcgan
 # *****************
 
 import os

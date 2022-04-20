@@ -1,3 +1,7 @@
+"""
+Adapted From:
+https://colab.research.google.com/drive/1-OxEGrsuFQNv1TJm1Dey9a7c_DYXzuvo
+"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
